@@ -12,13 +12,9 @@ const auth0ClientId = "aum2VaJ1GHfp8CUJhnCMqLvdojKt66CU";
 
 const getRedirectUri = () => {
   let origin: string;
-  if (import.meta.env.PROD) {
-    // Produktion: GitHub Pages Domain
-    origin = "https://knuspermixx.github.io";
-  } else {
-    // Entwicklung: Lokale Domain
+
     origin = "http://localhost:4321";
-  }
+
   const cleanBase = base.startsWith("/") ? base.substring(1) : base;
   const formattedBase =
     cleanBase && !cleanBase.endsWith("/") ? `${cleanBase}/` : cleanBase;
