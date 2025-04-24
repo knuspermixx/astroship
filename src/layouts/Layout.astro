@@ -68,3 +68,26 @@ const makeTitle = title
     </style>
   </body>
 </html>
+
+<script is:inline type="module">
+  import { initAuth } from '/src/lib/auth';
+
+  async function handleAuth() {
+    try {
+      console.log("Layout: Initializing Auth...");
+      const { authenticated, user } = await initAuth();
+      console.log("Layout: Auth initialized.", { authenticated, userName: user?.name });
+      // Hier könntest du z.B. ein Custom Event auslösen,
+      // auf das andere Komponenten (wie der Navbar) hören können,
+      // um sich zu aktualisieren, statt initAuth mehrfach aufzurufen.
+      document.dispatchEvent(new CustomEvent('auth-initialized', { detail: { authenticated, user } }));
+    } catch (error) {
+      console.error("Layout: Error during auth initialization:", error);
+    }
+  }
+
+  // Führe die Initialisierung aus, wenn das Fenster geladen ist
+  // oder direkt, je nach Präferenz. `DOMContentLoaded` ist sicher.
+  document.addEventListener('DOMContentLoaded', handleAuth);
+
+</script>

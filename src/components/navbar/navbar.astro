@@ -91,9 +91,36 @@ const menuitems = [
     </Astronav>
     <div>
       <div class="hidden lg:flex items-center gap-4">
-        <a href="#">Log in</a>
-        <Link href="#" size="md">Sign up</Link>
+        <Link id="login-btn" href="#" size="md">Log in</Link>
       </div>
     </div>
   </header>
 </Container>
+
+<script type="module">
+  import { initAuth, login, logout, isAuthenticated } from '/src/lib/auth'; 
+
+  const loginBtn = document.getElementById('login-btn');
+
+  async function updateLoginBtn() {
+    const authenticated = await isAuthenticated();
+    if (authenticated) {
+      loginBtn.textContent = 'Log out';
+      loginBtn.onclick = async (e) => {
+        e.preventDefault();
+        await logout();
+        updateLoginBtn();
+      };
+    } else {
+      loginBtn.textContent = 'Log in';
+      loginBtn.onclick = async (e) => {
+        e.preventDefault();
+        await login();
+        updateLoginBtn();
+      };
+    }
+  }
+
+  // Auth initialisieren und Button-Status setzen
+  initAuth().then(updateLoginBtn);
+</script>
