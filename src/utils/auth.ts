@@ -13,7 +13,12 @@ const auth0ClientId = "aum2VaJ1GHfp8CUJhnCMqLvdojKt66CU";
 const getRedirectUri = () => {
   let origin: string;
 
+ // Determine origin based on environment
+  if (import.meta.env.MODE === 'production') {
+    origin = "https://knuspermixx.github.io";
+  } else {
     origin = "http://localhost:4321";
+  }
 
   const cleanBase = base.startsWith("/") ? base.substring(1) : base;
   const formattedBase =

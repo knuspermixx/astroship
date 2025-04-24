@@ -103,6 +103,10 @@ const menuitems = [
   const loginBtn = document.getElementById('login-btn');
 
   async function updateLoginBtn() {
+    if (!loginBtn) {
+      console.error("Login button not found");
+      return;
+    }
     const authenticated = await isAuthenticated();
     if (authenticated) {
       loginBtn.textContent = 'Log out';
@@ -122,5 +126,9 @@ const menuitems = [
   }
 
   // Auth initialisieren und Button-Status setzen
-  initAuth().then(updateLoginBtn);
+  if (loginBtn) {
+    initAuth().then(updateLoginBtn);
+  } else {
+    console.error("Login button not found, cannot initialize auth state.");
+  }
 </script>
