@@ -6,7 +6,8 @@ import icon from "astro-icon";
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://astroship.web3templates.com",
+  site: 'https://knuspermixx.github.io',
+  base: '/astroship',
   integrations: [mdx(), sitemap(), icon()],
   vite: {
     plugins: [tailwindcss()],
