@@ -145,13 +145,39 @@ const menuitems = [
     </Astronav>
     <div>
       <div class="hidden lg:flex items-center gap-4">
-        <a href="#">Log in</a>
-        <Link href="#" size="md">Sign up</Link>
+        <Link id="login-btn" href="#" size="md">Log in</Link>
       </div>
     </div>
   </header>
 </Container>
 
+<script type="module">
+  import { initAuth, login, logout, isAuthenticated } from '/src/lib/auth'; 
+
+  const loginBtn = document.getElementById('login-btn');
+
+  async function updateLoginBtn() {
+    const authenticated = await isAuthenticated();
+    if (authenticated) {
+      loginBtn.textContent = 'Log out';
+      loginBtn.onclick = async (e) => {
+        e.preventDefault();
+        await logout();
+        updateLoginBtn();
+      };
+    } else {
+      loginBtn.textContent = 'Log in';
+      loginBtn.onclick = async (e) => {
+        e.preventDefault();
+        await login();
+        updateLoginBtn();
+      };
+    }
+  }
+
+  // Auth initialisieren und Button-Status setzen
+  initAuth().then(updateLoginBtn);
+</script>
 ```
 
 ## File: src/components/ui/button.astro
@@ -660,131 +686,6 @@ const { align = "center" } = Astro.props;
 
 ```
 
-## File: src/content/blog/complete-guide-fullstack-development.md
-```markdown
----
-draft: false
-title: "The Complete Guide to Full Stack Web Development"
-snippet: "Ornare cum cursus laoreet sagittis nunc fusce posuere per euismod dis vehicula a, semper fames lacus maecenas dictumst pulvinar neque enim non potenti. Torquent hac sociosqu eleifend potenti."
-image: {
-    src: "https://images.unsplash.com/photo-1593720213428-28a5b9e94613?&fit=crop&w=430&h=240",
-    alt: "full stack web development"
-}
-publishDate: "2022-11-08 11:39"
-category: "Tutorials"
-author: "Janette Lynch"
-tags: [webdev, tailwindcss, frontend]
----
-
- magna class praesent fusce. Mus morbi magnis ultricies sed turpis ultrices tempus tortor bibendum, netus nulla viverra torquent malesuada ridiculus tempor. Parturient sociosqu erat ullamcorper gravida natoque varius, etiam habitant augue praesent per curabitur iaculis, donec pellentesque cursus suscipit aliquet. Congue curae cursus scelerisque pellentesque quis fusce arcu eros dictumst luctus ridiculus nisl viverra, turpis class faucibus phasellus feugiat eleifend fringilla orci tristique habitasse conubia quam. Habitasse montes congue sodales rutrum cras torquent cursus auctor condimentum imperdiet egestas nascetur.
-
-```
-
-## File: src/content/blog/essential-data-structures-algorithms.md
-```markdown
----
-draft: false
-title: " Introduction to the Essential Data Structures & Algorithms"
-snippet: "Ornare cum cursus laoreet sagittis nunc fusce posuere per euismod dis vehicula a, semper fames lacus maecenas dictumst pulvinar neque enim non potenti. Torquent hac sociosqu eleifend potenti."
-image: {
-    src: "https://images.unsplash.com/photo-1627163439134-7a8c47e08208?&fit=crop&w=430&h=240",
-    alt: "data structures & algorithms"
-}
-publishDate: "2022-11-09 16:39"
-category: "Courses"
-author: "Marcell Ziemann"
-tags: [webdev, tailwindcss, frontend]
----
-
-Lorem ipsum dolor sit amet consectetur adipiscing elit euismod rutrum, consequat fringilla ultricies 
-
-## Sodales hendrerit malesuada et vestibulum
-
-- Luctus euismod pretium nisi et, est dui enim.
-
-- Curae eget inceptos malesuada, fermentum class.
-
-- Porttitor vestibulum aliquam porta feugiat velit, potenti eu placerat.
-
-- Ligula lacus tempus ac porta, vel litora.
-
-Torquent non nisi lacinia faucibus nibh tortor taciti commodo porttitor, mus hendrerit id leo scelerisque mollis habitasse orci tristique aptent, lacus at molestie cubilia facilisis porta accumsan condimentum. Metus lacus suscipit porttitor integer facilisi torquent, nostra nulla platea at natoque varius venenatis, id quam pharetra aliquam leo. Dictum orci himenaeos quam mi fusce lacinia maecenas ac magna eleifend laoreet, vivamus enim curabitur ullamcorper est ultrices convallis suscipit nascetur. Ornare fames pretium ante ac eget nisi tellus vivamus, convallis mauris sapien imperdiet sollicitudin aliquet taciti quam, lacinia tempor primis magna iaculis at eu. Est facilisi proin risus eleifend orci torquent ultricies platea, quisque nullam vel porttitor euismod sociis non, maecenas sociosqu interdum arcu sed pharetra potenti. Aliquet risus tempus hendrerit sapien tellus eget cursus enim etiam dui, lobortis nostra pellentesque odio posuere morbi ad neque senectus arcu eu, turpis proin ac felis purus fames magnis dis dignissim.
-
-```
-
-## File: src/content/team/janette-lynch.md
-```markdown
----
-draft: false
-name: "Janette Lynch"
-title: "Senior Director"
-avatar: {
-    src: "https://images.unsplash.com/photo-1580489944761-15a19d654956?&fit=crop&w=280",
-    alt: "Janette Lynch"
-}
-publishDate: "2022-11-07 15:39"
----
-
-```
-
-## File: src/content/team/marcell-ziemann.md
-```markdown
----
-draft: false
-name: "Marcell Ziemann"
-title: "Principal Strategist"
-avatar: {
-    src: "https://images.unsplash.com/photo-1633332755192-727a05c4013d?&fit=crop&w=280",
-    alt: "Marcell Ziemann"
-}
-publishDate: "2022-11-08 15:39"
----
-
-```
-
-## File: src/content/config.ts
-```typescript
-// 1. Import utilities from `astro:content`
-import { z, defineCollection } from 'astro:content';
-
-// 2. Define your collection(s)
-const blogCollection = defineCollection({
-  schema: z.object({
-    draft: z.boolean(),
-    title: z.string(),
-    snippet: z.string(),
-    image: z.object({
-      src: z.string(),
-      alt: z.string(),
-    }),
-    publishDate: z.string().transform(str => new Date(str)),
-    author: z.string().default('Astroship'),
-    category: z.string(),
-    tags: z.array(z.string()),
-  }),
-});
-
-const teamCollection = defineCollection({
-  schema: z.object({
-    draft: z.boolean(),
-    name: z.string(),
-    title: z.string(),
-    avatar: z.object({
-      src: z.string(),
-      alt: z.string(),
-    }),
-    publishDate: z.string().transform(str => new Date(str)),
-  }),
-});
-
-// 3. Export a single `collections` object to register your collection(s)
-//    This key should match your collection directory name in "src/content"
-export const collections = {
-  'blog': blogCollection,
-  'team': teamCollection,
-};
-```
-
 ## File: src/layouts/BlogLayout.astro
 ```astro
 ---
@@ -912,6 +813,29 @@ const makeTitle = title
   </body>
 </html>
 
+<script is:inline type="module">
+  import { initAuth } from '/src/lib/auth';
+
+  async function handleAuth() {
+    try {
+      console.log("Layout: Initializing Auth...");
+      const { authenticated, user } = await initAuth();
+      console.log("Layout: Auth initialized.", { authenticated, userName: user?.name });
+      // Hier könntest du z.B. ein Custom Event auslösen,
+      // auf das andere Komponenten (wie der Navbar) hören können,
+      // um sich zu aktualisieren, statt initAuth mehrfach aufzurufen.
+      document.dispatchEvent(new CustomEvent('auth-initialized', { detail: { authenticated, user } }));
+    } catch (error) {
+      console.error("Layout: Error during auth initialization:", error);
+    }
+  }
+
+  // Führe die Initialisierung aus, wenn das Fenster geladen ist
+  // oder direkt, je nach Präferenz. `DOMContentLoaded` ist sicher.
+  document.addEventListener('DOMContentLoaded', handleAuth);
+
+</script>
+
 ```
 
 ## File: src/pages/blog/[slug].astro
@@ -975,6 +899,26 @@ const { Content } = await entry.render();
         class="bg-gray-100 px-5 py-3 rounded-md hover:bg-gray-200 transition"
         >← Back to Blog</a
       >
+    </div>
+  </Container>
+</Layout>
+
+```
+
+## File: src/pages/404.astro
+```astro
+---
+import Container from "@/components/container.astro";
+import Layout from "@/layouts/Layout.astro";
+---
+
+<Layout title="404 Not Found">
+  <Container>
+    <div class="min-h-[calc(100vh-16rem)] flex items-center justify-center">
+      <div class="mt-16 text-center">
+        <h1 class="text-4xl lg:text-5xl font-bold lg:tracking-tight">404</h1>
+        <p class="text-lg mt-4 text-slate-600">Page not found.</p>
+      </div>
     </div>
   </Container>
 </Layout>
@@ -1278,17 +1222,153 @@ const pricing = [
 
 ```
 
-## File: src/utils/all.js
-```javascript
-/** */
-export const getFormattedDate = (date) =>
-  date
-    ? new Date(date).toLocaleDateString("en-us", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-      })
-    : "";
+## File: src/lib/auth.ts
+```typescript
+import {
+  createAuth0Client,
+  type Auth0Client,
+  type User,
+} from "@auth0/auth0-spa-js";
+import { base } from "astro:config/client";
+
+let auth0Client: Auth0Client | null = null;
+
+const auth0Domain = "https://dev-xt5nci8m2zxscg23.eu.auth0.com";
+const auth0ClientId = "aum2VaJ1GHfp8CUJhnCMqLvdojKt66CU";
+
+const getRedirectUri = () => {
+  let origin: string;
+  origin = "http://localhost:4321";
+  const cleanBase = base.startsWith("/") ? base.substring(1) : base;
+  const formattedBase =
+    cleanBase && !cleanBase.endsWith("/") ? `${cleanBase}/` : cleanBase;
+  return `${origin}/${formattedBase}`;
+};
+
+async function getClient(): Promise<Auth0Client> {
+  if (auth0Client) {
+    return auth0Client;
+  }
+
+  console.log("Initializing Auth0 client with redirect_uri:", getRedirectUri());
+
+  try {
+    auth0Client = await createAuth0Client({
+      domain: auth0Domain,
+      clientId: auth0ClientId,
+      cacheLocation: "localstorage",
+      authorizationParams: {
+        redirect_uri: getRedirectUri(),
+        scope: "repo",
+      },
+      useRefreshTokens: true,
+    });
+    console.log("Auth0 client initialized successfully.");
+    return auth0Client;
+  } catch (error) {
+    console.error("Error initializing Auth0 client:", error);
+    throw error;
+  }
+}
+
+export async function login() {
+  try {
+    const client = await getClient();
+    await client.loginWithRedirect();
+  } catch (error) {
+    console.error("Login failed:", error);
+  }
+}
+
+export async function logout() {
+  try {
+    const client = await getClient();
+    await client.logout({
+      logoutParams: {
+        returnTo: getRedirectUri(),
+      },
+    });
+  } catch (error) {
+    console.error("Logout failed:", error);
+  }
+}
+
+export async function handleRedirectCallback(): Promise<boolean> {
+  const client = await getClient();
+  const params = new URLSearchParams(window.location.search);
+  const hasCode = params.has("code");
+  const hasState = params.has("state");
+
+  if (hasCode && hasState) {
+    console.log("Handling redirect callback...");
+    try {
+      await client.handleRedirectCallback();
+      console.log("Redirect callback handled.");
+      window.history.replaceState({}, document.title, window.location.pathname);
+      return true;
+    } catch (error) {
+      console.error("Error handling redirect callback:", error);
+      window.history.replaceState({}, document.title, window.location.pathname);
+      return false;
+    }
+  }
+  return false;
+}
+
+export async function isAuthenticated(): Promise<boolean> {
+  try {
+    const client = await getClient();
+    return await client.isAuthenticated();
+  } catch (error) {
+    console.error("Error checking authentication status:", error);
+    return false;
+  }
+}
+
+export async function getUser(): Promise<User | undefined> {
+  try {
+    const client = await getClient();
+    return await client.getUser();
+  } catch (error) {
+    console.error("Error getting user profile:", error);
+    return undefined;
+  }
+}
+
+export async function getToken(): Promise<string | undefined> {
+  try {
+    const client = await getClient();
+    return await client.getTokenSilently();
+  } catch (error) {
+    console.error("Error getting token silently:", error);
+
+    return undefined;
+  }
+}
+
+export async function initAuth(): Promise<{
+  authenticated: boolean;
+  user?: User;
+}> {
+  console.log("Starting Auth initialization...");
+  await getClient();
+  const handled = await handleRedirectCallback();
+  if (handled) {
+    console.log("Redirect handled, checking final auth state.");
+  }
+  const authenticated = await isAuthenticated();
+  let user: User | undefined = undefined;
+  if (authenticated) {
+    user = await getUser();
+  }
+  console.log(
+    "Auth initialization complete. Authenticated:",
+    authenticated,
+    "User:",
+    user?.name
+  );
+  return { authenticated, user };
+}
 
 ```
 
@@ -1302,7 +1382,8 @@ import icon from "astro-icon";
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://astroship.web3templates.com",
+  site: 'https://knuspermixx.github.io',
+  base: '/astroship',
   integrations: [mdx(), sitemap(), icon()],
   vite: {
     plugins: [tailwindcss()],
