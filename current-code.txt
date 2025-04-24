@@ -1,0 +1,1313 @@
+## File: src/components/navbar/dropdown.astro
+```astro
+---
+import { Dropdown as DropdownContainer, DropdownItems } from "astro-navbar";
+const { title, lastItem, children } = Astro.props;
+---
+
+<li class="relative">
+  <DropdownContainer class="group">
+    <button
+      class="flex items-center gap-1 w-full lg:w-auto lg:px-3 py-2 text-gray-600 hover:text-gray-900">
+      <span>{title}</span>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke-width="3"
+        stroke="currentColor"
+        class="w-3 h-3 mt-0.5 group-open:rotate-180">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M19.5 8.25l-7.5 7.5-7.5-7.5"></path>
+      </svg>
+    </button>
+    <DropdownItems>
+      <div
+        class:list={[
+          "lg:absolute w-full lg:w-48 z-10",
+          lastItem
+            ? "lg:right-0 origin-top-right"
+            : "lg:left-0 origin-top-left",
+        ]}>
+        <div
+          class="px-3 lg:py-2 lg:bg-white lg:rounded-md lg:shadow-sm lg:border flex flex-col">
+          {
+            children.map((item) => (
+              <a
+                href={item.path}
+                class="py-1 text-gray-600 hover:text-gray-900">
+                {item.title}
+              </a>
+            ))
+          }
+        </div>
+      </div>
+    </DropdownItems>
+  </DropdownContainer>
+</li>
+
+```
+
+## File: src/components/navbar/navbar.astro
+```astro
+---
+import Container from "@/components/container.astro";
+import Link from "@/components/ui/link.astro";
+import Dropdown from "./dropdown.astro";
+import { Astronav, MenuItems, MenuIcon } from "astro-navbar";
+
+const menuitems = [
+  {
+    title: "Features",
+    path: "#",
+    children: [
+      { title: "Action", path: "/" },
+      { title: "Another action", path: "#" },
+      { title: "Dropdown Submenu", path: "#" },
+      { title: "404 Page", path: "/404" },
+    ],
+  },
+  {
+    title: "Pricing",
+    path: "/pricing",
+  },
+  {
+    title: "About",
+    path: "/about",
+  },
+  {
+    title: "Blog",
+    path: "/blog",
+  },
+  {
+    title: "Contact",
+    path: "/contact",
+  },
+  {
+    title: "Pro Version",
+    badge: true,
+    path: "https://astroship-pro.web3templates.com/",
+  },
+];
+---
+
+<Container>
+  <header class="flex flex-col lg:flex-row justify-between items-center my-5">
+    <Astronav>
+      <div class="flex w-full lg:w-auto items-center justify-between">
+        <a href="/" class="text-lg"
+          ><span class="font-bold text-slate-800">Astro</span><span
+            class="text-slate-500">ship</span
+          >
+        </a>
+        <div class="block lg:hidden">
+          <MenuIcon class="w-4 h-4 text-gray-800" />
+        </div>
+      </div>
+      <MenuItems class="hidden w-full lg:w-auto mt-2 lg:flex lg:mt-0">
+        <ul class="flex flex-col lg:flex-row lg:gap-3">
+          {
+            menuitems.map((item, index) => (
+              <>
+                {item.children && (
+                  <Dropdown
+                    title={item.title}
+                    children={item.children}
+                    lastItem={index === menuitems.length - 1}
+                  />
+                )}
+
+                {!item.children && (
+                  <li>
+                    <a
+                      href={item.path}
+                      class="flex lg:px-3 py-2 items-center text-gray-600 hover:text-gray-900">
+                      <span> {item.title}</span>
+                      {item.badge && (
+                        <span class="ml-1 px-2 py-0.5 text-[10px] animate-pulse font-semibold uppercase text-white bg-indigo-600 rounded-full">
+                          New
+                        </span>
+                      )}
+                    </a>
+                  </li>
+                )}
+              </>
+            ))
+          }
+        </ul>
+        <div class="lg:hidden flex items-center mt-3 gap-4">
+          <Link href="#" style="muted" block size="md">Log in</Link>
+          <Link href="#" size="md" block>Sign up</Link>
+        </div>
+      </MenuItems>
+    </Astronav>
+    <div>
+      <div class="hidden lg:flex items-center gap-4">
+        <a href="#">Log in</a>
+        <Link href="#" size="md">Sign up</Link>
+      </div>
+    </div>
+  </header>
+</Container>
+
+```
+
+## File: src/components/ui/button.astro
+```astro
+---
+interface Props {
+  size?: "md" | "lg";
+  block?: boolean;
+  style?: "outline" | "primary" | "inverted";
+  class?: string;
+  [x: string]: any;
+}
+
+const {
+  size = "md",
+  style = "primary",
+  block,
+  class: className,
+  ...rest
+} = Astro.props;
+
+const sizes = {
+  md: "px-5 py-2.5",
+  lg: "px-6 py-3",
+};
+
+const styles = {
+  outline: "border-2 border-black hover:bg-black text-black hover:text-white",
+  primary:
+    "bg-black text-white hover:bg-slate-900  border-2 border-transparent",
+};
+---
+
+<button
+  {...rest}
+  class:list={[
+    "rounded-sm text-center transition focus-visible:ring-2 ring-offset-2 ring-gray-200",
+    block && "w-full",
+    sizes[size],
+    styles[style],
+    className,
+  ]}
+  ><slot />
+</button>
+
+```
+
+## File: src/components/ui/link.astro
+```astro
+---
+interface Props {
+  href: string;
+  size?: "md" | "lg";
+  block?: boolean;
+  style?: "outline" | "primary" | "inverted" | "muted";
+  class?: string;
+  [x: string]: any;
+}
+
+const {
+  href,
+  block,
+  size = "lg",
+  style = "primary",
+  class: className,
+  ...rest
+} = Astro.props;
+
+const sizes = {
+  lg: "px-5 py-2.5",
+  md: "px-4 py-2",
+};
+
+const styles = {
+  outline: "bg-white border-2 border-black hover:bg-gray-100 text-black ",
+  primary: "bg-black text-white hover:bg-gray-800  border-2 border-transparent",
+  inverted: "bg-white text-black   border-2 border-transparent",
+  muted: "bg-gray-100 hover:bg-gray-200   border-2 border-transparent",
+};
+---
+
+<a
+  href={href}
+  {...rest}
+  class:list={[
+    "rounded-sm text-center transition focus-visible:ring-2 ring-offset-2 ring-gray-200",
+    block && "w-full",
+    sizes[size],
+    styles[style],
+    className,
+  ]}
+  ><slot />
+</a>
+
+```
+
+## File: src/components/contactform.astro
+```astro
+---
+import Button from "./ui/button.astro";
+---
+
+<!-- To make this contact form work, create your free access key from https://web3forms.com/
+     Then you will get all form submissions in your email inbox. -->
+<form
+  action="https://api.web3forms.com/submit"
+  method="POST"
+  id="form"
+  class="needs-validation"
+  novalidate>
+  <input type="hidden" name="access_key" value="YOUR_ACCESS_KEY_HERE" />
+  <!-- Create your free access key from https://web3forms.com/ -->
+  <input type="checkbox" class="hidden" style="display:none" name="botcheck" />
+  <div class="mb-5">
+    <input
+      type="text"
+      placeholder="Full Name"
+      required
+      class="w-full px-4 py-3 border-2 placeholder:text-gray-800 rounded-md outline-hidden focus:ring-4 border-gray-300 focus:border-gray-600 ring-gray-100"
+      name="name"
+    />
+    <div class="empty-feedback invalid-feedback text-red-400 text-sm mt-1">
+      Please provide your full name.
+    </div>
+  </div>
+  <div class="mb-5">
+    <label for="email_address" class="sr-only">Email Address</label><input
+      id="email_address"
+      type="email"
+      placeholder="Email Address"
+      name="email"
+      required
+      class="w-full px-4 py-3 border-2 placeholder:text-gray-800 rounded-md outline-hidden focus:ring-4 border-gray-300 focus:border-gray-600 ring-gray-100"
+    />
+    <div class="empty-feedback text-red-400 text-sm mt-1">
+      Please provide your email address.
+    </div>
+    <div class="invalid-feedback text-red-400 text-sm mt-1">
+      Please provide a valid email address.
+    </div>
+  </div>
+  <div class="mb-3">
+    <textarea
+      name="message"
+      required
+      placeholder="Your Message"
+      class="w-full px-4 py-3 border-2 placeholder:text-gray-800 rounded-md outline-hidden h-36 focus:ring-4 border-gray-300 focus:border-gray-600 ring-gray-100"
+    ></textarea>
+    <div class="empty-feedback invalid-feedback text-red-400 text-sm mt-1">
+      Please enter your message.
+    </div>
+  </div>
+  <Button type="submit" size="lg" block>Send Message</Button>
+  <div id="result" class="mt-3 text-center"></div>
+</form>
+
+<style>
+  .invalid-feedback,
+  .empty-feedback {
+    display: none;
+  }
+
+  .was-validated :placeholder-shown:invalid ~ .empty-feedback {
+    display: block;
+  }
+
+  .was-validated :not(:placeholder-shown):invalid ~ .invalid-feedback {
+    display: block;
+  }
+
+  .is-invalid,
+  .was-validated :invalid {
+    border-color: #dc3545;
+  }
+</style>
+
+<script is:inline>
+  const form = document.getElementById("form");
+  const result = document.getElementById("result");
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    form.classList.add("was-validated");
+    if (!form.checkValidity()) {
+      form.querySelectorAll(":invalid")[0].focus();
+      return;
+    }
+    const formData = new FormData(form);
+    const object = Object.fromEntries(formData);
+    const json = JSON.stringify(object);
+
+    result.innerHTML = "Sending...";
+
+    fetch("https://api.web3forms.com/submit", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: json,
+    })
+      .then(async (response) => {
+        let json = await response.json();
+        if (response.status == 200) {
+          result.classList.add("text-green-500");
+          result.innerHTML = json.message;
+        } else {
+          console.log(response);
+          result.classList.add("text-red-500");
+          result.innerHTML = json.message;
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        result.innerHTML = "Something went wrong!";
+      })
+      .then(function () {
+        form.reset();
+        form.classList.remove("was-validated");
+        setTimeout(() => {
+          result.style.display = "none";
+        }, 5000);
+      });
+  });
+</script>
+
+```
+
+## File: src/components/container.astro
+```astro
+---
+const { class: className } = Astro.props;
+---
+
+<div class:list={["max-w-(--breakpoint-xl) mx-auto px-5", className]}>
+  <slot />
+</div>
+
+```
+
+## File: src/components/cta.astro
+```astro
+---
+import Link from "./ui/link.astro";
+---
+
+<div
+  class="bg-black p-8 md:px-20 md:py-20 mt-20 mx-auto max-w-5xl rounded-lg flex flex-col items-center text-center">
+  <h2 class="text-white text-4xl md:text-6xl tracking-tight">
+    Build faster websites.
+  </h2>
+  <p class="text-slate-400 mt-4 text-lg md:text-xl">
+    Pull content from anywhere and serve it fast with Astro's next-gen island
+    architecture.
+  </p>
+  <div class="flex mt-5">
+    <Link href="#" style="inverted">Get Started</Link>
+  </div>
+</div>
+
+```
+
+## File: src/components/features.astro
+```astro
+---
+// @ts-ignore
+import { Icon } from "astro-icon/components";
+
+const features = [
+  {
+    title: "Bring Your Own Framework",
+    description:
+      "Build your site using React, Svelte, Vue, Preact, web components, or just plain ol' HTML + JavaScript.",
+    icon: "bx:bxs-briefcase",
+  },
+  {
+    title: "100% Static HTML, No JS",
+    description:
+      "Astro renders your entire page to static HTML, removing all JavaScript from your final build by default.",
+    icon: "bx:bxs-window-alt",
+  },
+  {
+    title: "On-Demand Components",
+    description:
+      "Need some JS? Astro can automatically hydrate interactive components when they become visible on the page.  ",
+    icon: "bx:bxs-data",
+  },
+  {
+    title: "Broad Integration",
+    description:
+      "Astro supports TypeScript, Scoped CSS, CSS Modules, Sass, Tailwind, Markdown, MDX, and any other npm packages.",
+    icon: "bx:bxs-bot",
+  },
+  {
+    title: "SEO Enabled",
+    description:
+      "Automatic sitemaps, RSS feeds, pagination and collections take the pain out of SEO and syndication. It just works!",
+    icon: "bx:bxs-file-find",
+  },
+  {
+    title: "Community",
+    description:
+      "Astro is an open source project powered by hundreds of contributors making thousands of individual contributions.",
+    icon: "bx:bxs-user",
+  },
+];
+---
+
+<div class="mt-16 md:mt-0">
+  <h2 class="text-4xl lg:text-5xl font-bold lg:tracking-tight">
+    Everything you need to start a website
+  </h2>
+  <p class="text-lg mt-4 text-slate-600">
+    Astro comes batteries included. It takes the best parts of state-of-the-art
+    tools and adds its own innovations.
+  </p>
+</div>
+
+<div class="grid sm:grid-cols-2 md:grid-cols-3 mt-16 gap-16">
+  {
+    features.map((item) => (
+      <div class="flex gap-4 items-start">
+        <div class="mt-1 bg-black rounded-full  p-2 w-8 h-8 shrink-0">
+          <Icon class="text-white" name={item.icon} />
+        </div>
+        <div>
+          <h3 class="font-semibold text-lg">{item.title}</h3>{" "}
+          <p class="text-slate-500 mt-2 leading-relaxed">{item.description}</p>
+        </div>
+      </div>
+    ))
+  }
+</div>
+
+```
+
+## File: src/components/footer.astro
+```astro
+<footer class="my-20">
+  <p class="text-center text-sm text-slate-500">
+    Copyright © {new Date().getFullYear()} Astroship. All rights reserved.
+  </p>
+  <!--
+    Can we ask you a favor 🙏
+    Please keep this backlink on your website if possible.
+    or Purchase a commercial license from https://web3templates.com
+  -->
+  <p class="text-center text-xs text-slate-500 mt-1">
+    Made by <a
+      href="https://web3templates.com"
+      target="_blank"
+      rel="noopener"
+      class="hover:underline">
+      Web3Templates
+    </a>
+  </p>
+</footer>
+
+```
+
+## File: src/components/hero.astro
+```astro
+---
+import { Picture } from "astro:assets";
+import heroImage from "@/assets/hero.png";
+import Link from "@/components/ui/link.astro";
+import { Icon } from "astro-icon/components";
+---
+
+<main
+  class="grid lg:grid-cols-2 place-items-center pt-16 pb-8 md:pt-12 md:pb-24">
+  <div class="py-6 md:order-1 hidden md:block">
+    <Picture
+      src={heroImage}
+      alt="Astronaut in the air"
+      widths={[200, 400, 600]}
+      sizes="(max-width: 800px) 100vw, 620px"
+      loading="eager"
+      format="avif"
+    />
+  </div>
+  <div>
+    <h1
+      class="text-5xl lg:text-6xl xl:text-7xl font-bold lg:tracking-tight xl:tracking-tighter">
+      Marketing website done with Astro
+    </h1>
+    <p class="text-lg mt-4 text-slate-600 max-w-xl">
+      Astroship is a starter template for startups, marketing websites & landing
+      pages.<wbr /> Built with Astro.build and TailwindCSS. You can quickly create
+      any website with this starter.
+    </p>
+    <div class="mt-6 flex flex-col sm:flex-row gap-3">
+      <Link
+        href="#"
+        href="https://web3templates.com/templates/astroship-starter-website-template-for-astro"
+        target="_blank"
+        class="flex gap-1 items-center justify-center"
+        rel="noopener">
+        <Icon class="text-white w-5 h-5" name="bx:bxs-cloud-download" />
+
+        Download for Free
+      </Link>
+      <Link
+        size="lg"
+        style="outline"
+        rel="noopener"
+        href="https://github.com/surjithctly/astroship"
+        class="flex gap-1 items-center justify-center"
+        target="_blank">
+        <Icon class="text-black w-4 h-4" name="bx:bxl-github" />
+        GitHub Repo
+      </Link>
+    </div>
+  </div>
+</main>
+
+```
+
+## File: src/components/logos.astro
+```astro
+---
+// @ts-ignore
+import { Icon } from "astro-icon/components";
+---
+
+<div class="mt-24">
+  <h2 class="text-center text-slate-500">Works with your technologies</h2>
+  <div class="flex gap-8 md:gap-20 items-center justify-center mt-10 flex-wrap">
+
+    <Icon class="size-8 md:size-12" name="simple-icons:react" />
+    <Icon class="size-8 md:size-12" name="simple-icons:svelte" />
+    <Icon class="size-8 md:size-12" name="simple-icons:astro" />
+    <Icon class="size-8 md:size-16" name="simple-icons:tailwindcss" />
+    <Icon class="size-8 md:size-16" name="simple-icons:alpinedotjs" />
+    <Icon class="size-8 md:size-12" name="simple-icons:vercel" />
+
+  </div>
+</div>
+
+```
+
+## File: src/components/pricing.astro
+```astro
+---
+import { Tick } from "@/components/ui/icons";
+import Link from "@/components/ui/link.astro";
+
+const { plan } = Astro.props;
+---
+
+<div>
+  <div
+    class="flex flex-col w-full order-first lg:order-none border-2 border-[#D8DEE9] border-opacity-50 py-5 px-6 rounded-md">
+    <div class="text-center">
+      <h4 class="text-lg font-medium text-gray-400">{plan.name}</h4><p
+        class="mt-3 text-4xl font-bold text-black md:text-4xl">
+        {
+          plan.price && typeof plan.price === "object"
+            ? plan.price.monthly
+            : plan.price
+        }
+      </p>
+      <!-- {
+        plan.price.original && (
+          <p class="mt-1 text-xl font-medium text-gray-400 line-through md:text-2xl">
+            {plan.price.original}
+          </p>
+        )
+      } -->
+    </div><ul class="grid mt-8 text-left gap-y-4">
+      {
+        plan.features.map((item) => (
+          <li class="flex items-start gap-3 text-gray-800">
+            <Tick class="w-6 h-6" />
+            <span>{item}</span>
+          </li>
+        ))
+      }
+    </ul><div class="flex mt-8">
+      <Link
+        href={plan.button.link || "#"}
+        block
+        style={plan.popular ? "primary" : "outline"}>
+        {plan.button.text || "Get Started"}
+      </Link>
+    </div>
+  </div>
+</div>
+
+```
+
+## File: src/components/sectionhead.astro
+```astro
+---
+const { align = "center" } = Astro.props;
+---
+
+<div class:list={["mt-16", align === "center" && "text-center"]}>
+  <h1 class="text-4xl lg:text-5xl font-bold lg:tracking-tight">
+    <slot name="title">Title</slot>
+  </h1>
+  <p class="text-lg mt-4 text-slate-600">
+    <slot name="desc">Some description goes here</slot>
+  </p>
+</div>
+
+```
+
+## File: src/content/blog/complete-guide-fullstack-development.md
+```markdown
+---
+draft: false
+title: "The Complete Guide to Full Stack Web Development"
+snippet: "Ornare cum cursus laoreet sagittis nunc fusce posuere per euismod dis vehicula a, semper fames lacus maecenas dictumst pulvinar neque enim non potenti. Torquent hac sociosqu eleifend potenti."
+image: {
+    src: "https://images.unsplash.com/photo-1593720213428-28a5b9e94613?&fit=crop&w=430&h=240",
+    alt: "full stack web development"
+}
+publishDate: "2022-11-08 11:39"
+category: "Tutorials"
+author: "Janette Lynch"
+tags: [webdev, tailwindcss, frontend]
+---
+
+ magna class praesent fusce. Mus morbi magnis ultricies sed turpis ultrices tempus tortor bibendum, netus nulla viverra torquent malesuada ridiculus tempor. Parturient sociosqu erat ullamcorper gravida natoque varius, etiam habitant augue praesent per curabitur iaculis, donec pellentesque cursus suscipit aliquet. Congue curae cursus scelerisque pellentesque quis fusce arcu eros dictumst luctus ridiculus nisl viverra, turpis class faucibus phasellus feugiat eleifend fringilla orci tristique habitasse conubia quam. Habitasse montes congue sodales rutrum cras torquent cursus auctor condimentum imperdiet egestas nascetur.
+
+```
+
+## File: src/content/blog/essential-data-structures-algorithms.md
+```markdown
+---
+draft: false
+title: " Introduction to the Essential Data Structures & Algorithms"
+snippet: "Ornare cum cursus laoreet sagittis nunc fusce posuere per euismod dis vehicula a, semper fames lacus maecenas dictumst pulvinar neque enim non potenti. Torquent hac sociosqu eleifend potenti."
+image: {
+    src: "https://images.unsplash.com/photo-1627163439134-7a8c47e08208?&fit=crop&w=430&h=240",
+    alt: "data structures & algorithms"
+}
+publishDate: "2022-11-09 16:39"
+category: "Courses"
+author: "Marcell Ziemann"
+tags: [webdev, tailwindcss, frontend]
+---
+
+Lorem ipsum dolor sit amet consectetur adipiscing elit euismod rutrum, consequat fringilla ultricies 
+
+## Sodales hendrerit malesuada et vestibulum
+
+- Luctus euismod pretium nisi et, est dui enim.
+
+- Curae eget inceptos malesuada, fermentum class.
+
+- Porttitor vestibulum aliquam porta feugiat velit, potenti eu placerat.
+
+- Ligula lacus tempus ac porta, vel litora.
+
+Torquent non nisi lacinia faucibus nibh tortor taciti commodo porttitor, mus hendrerit id leo scelerisque mollis habitasse orci tristique aptent, lacus at molestie cubilia facilisis porta accumsan condimentum. Metus lacus suscipit porttitor integer facilisi torquent, nostra nulla platea at natoque varius venenatis, id quam pharetra aliquam leo. Dictum orci himenaeos quam mi fusce lacinia maecenas ac magna eleifend laoreet, vivamus enim curabitur ullamcorper est ultrices convallis suscipit nascetur. Ornare fames pretium ante ac eget nisi tellus vivamus, convallis mauris sapien imperdiet sollicitudin aliquet taciti quam, lacinia tempor primis magna iaculis at eu. Est facilisi proin risus eleifend orci torquent ultricies platea, quisque nullam vel porttitor euismod sociis non, maecenas sociosqu interdum arcu sed pharetra potenti. Aliquet risus tempus hendrerit sapien tellus eget cursus enim etiam dui, lobortis nostra pellentesque odio posuere morbi ad neque senectus arcu eu, turpis proin ac felis purus fames magnis dis dignissim.
+
+```
+
+## File: src/content/team/janette-lynch.md
+```markdown
+---
+draft: false
+name: "Janette Lynch"
+title: "Senior Director"
+avatar: {
+    src: "https://images.unsplash.com/photo-1580489944761-15a19d654956?&fit=crop&w=280",
+    alt: "Janette Lynch"
+}
+publishDate: "2022-11-07 15:39"
+---
+
+```
+
+## File: src/content/team/marcell-ziemann.md
+```markdown
+---
+draft: false
+name: "Marcell Ziemann"
+title: "Principal Strategist"
+avatar: {
+    src: "https://images.unsplash.com/photo-1633332755192-727a05c4013d?&fit=crop&w=280",
+    alt: "Marcell Ziemann"
+}
+publishDate: "2022-11-08 15:39"
+---
+
+```
+
+## File: src/content/config.ts
+```typescript
+// 1. Import utilities from `astro:content`
+import { z, defineCollection } from 'astro:content';
+
+// 2. Define your collection(s)
+const blogCollection = defineCollection({
+  schema: z.object({
+    draft: z.boolean(),
+    title: z.string(),
+    snippet: z.string(),
+    image: z.object({
+      src: z.string(),
+      alt: z.string(),
+    }),
+    publishDate: z.string().transform(str => new Date(str)),
+    author: z.string().default('Astroship'),
+    category: z.string(),
+    tags: z.array(z.string()),
+  }),
+});
+
+const teamCollection = defineCollection({
+  schema: z.object({
+    draft: z.boolean(),
+    name: z.string(),
+    title: z.string(),
+    avatar: z.object({
+      src: z.string(),
+      alt: z.string(),
+    }),
+    publishDate: z.string().transform(str => new Date(str)),
+  }),
+});
+
+// 3. Export a single `collections` object to register your collection(s)
+//    This key should match your collection directory name in "src/content"
+export const collections = {
+  'blog': blogCollection,
+  'team': teamCollection,
+};
+```
+
+## File: src/layouts/BlogLayout.astro
+```astro
+---
+import Container from "@/components/container.astro";
+import { getFormattedDate } from "@/utils/all";
+import Layout from "./Layout.astro";
+
+const { frontmatter } = Astro.props;
+---
+
+<Layout title={frontmatter.title}>
+  <Container>
+    <div class="mx-auto max-w-[735px] mt-14">
+      <span class="text-blue-400 uppercase tracking-wider text-sm font-medium">
+        {frontmatter.category}
+      </span>
+      <h1
+        class="text-4xl lg:text-5xl font-bold lg:tracking-tight mt-1 lg:leading-tight">
+        {frontmatter.title}
+      </h1>
+      <div class="flex gap-2 mt-3 items-center flex-wrap md:flex-nowrap">
+        <span class="text-gray-400">
+          {frontmatter.author}
+        </span>
+        <span class="text-gray-400">•</span>
+        <time class="text-gray-400" datetime={frontmatter.publishDate}>
+          {getFormattedDate(frontmatter.publishDate)}
+        </time>
+        <span class="text-gray-400 hidden md:block">•</span>
+        <div class="w-full md:w-auto flex flex-wrap gap-3">
+          {
+            frontmatter.tags.map((tag) => (
+              <span class="text-sm text-gray-500">#{tag}</span>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="mx-auto prose prose-lg mt-6">
+      <slot />
+    </div>
+    <div class="text-center mt-8">
+      <a
+        href="/blog"
+        class="bg-gray-100 px-5 py-3 rounded-md hover:bg-gray-200 transition"
+        >← Back to Blog</a
+      >
+    </div>
+  </Container>
+</Layout>
+
+```
+
+## File: src/layouts/Layout.astro
+```astro
+---
+import { SEO } from "astro-seo";
+import Footer from "@/components/footer.astro";
+import Navbar from "@/components/navbar/navbar.astro";
+import "@fontsource-variable/inter/index.css";
+import "@fontsource-variable/bricolage-grotesque";
+import "../styles/global.css";
+
+export interface Props {
+  title: string;
+}
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site).toString();
+
+const resolvedImageWithDomain = new URL(
+  "/opengraph.jpg",
+  Astro.site
+).toString();
+
+const { title } = Astro.props;
+
+const makeTitle = title
+  ? title + " | " + "Astroship"
+  : "Astroship - Starter Template for Astro with Tailwind CSS";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- <link rel="preload" as="image" href={src} alt="Hero" /> -->
+    <SEO
+      title={makeTitle}
+      description="Astroship is a starter website template for Astro built with TailwindCSS."
+      canonical={canonicalURL}
+      twitter={{
+        creator: "@surjithctly",
+        site: "@web3templates",
+        card: "summary_large_image",
+      }}
+      openGraph={{
+        basic: {
+          url: canonicalURL,
+          type: "website",
+          title: `Astroship - Starter Template for Astro`,
+          image: resolvedImageWithDomain,
+        },
+        image: {
+          alt: "Astroship Homepage Screenshot",
+        },
+      }}
+    />
+  </head>
+  <body>
+    <Navbar />
+    <slot />
+    <Footer />
+    <style is:global>
+      /* Improve Page speed */
+      /* https://css-tricks.com/almanac/properties/c/content-visibility/ */
+      img {
+        content-visibility: auto;
+      }
+    </style>
+  </body>
+</html>
+
+```
+
+## File: src/pages/blog/[slug].astro
+```astro
+---
+import { getCollection } from "astro:content";
+import Layout from "@/layouts/Layout.astro";
+import Container from "@/components/container.astro";
+
+// Generate a new path for every collection entry
+export async function getStaticPaths() {
+  const blogEntries = await getCollection("blog");
+  return blogEntries.map((entry) => ({
+    params: { slug: entry.slug },
+    props: { entry },
+  }));
+}
+
+// Get the entry directly from the prop on render
+const { entry } = Astro.props;
+const { Content } = await entry.render();
+---
+
+<Layout title={entry.data.title}>
+  <Container>
+    <div class="mx-auto max-w-3xl mt-14">
+      <span class="text-blue-400 uppercase tracking-wider text-sm font-medium">
+        {entry.data.category}
+      </span>
+      <h1
+        class="text-4xl lg:text-5xl font-bold lg:tracking-tight mt-1 lg:leading-tight">
+        {entry.data.title}
+      </h1>
+      <div class="flex gap-2 mt-3 items-center flex-wrap md:flex-nowrap">
+        <span class="text-gray-400">
+          {entry.data.author}
+        </span>
+        <span class="text-gray-400">•</span>
+        <time
+          class="text-gray-400"
+          datetime={entry.data.publishDate.toISOString()}>
+          {entry.data.publishDate.toDateString()}
+        </time>
+        <span class="text-gray-400 hidden md:block">•</span>
+        <div class="w-full md:w-auto flex flex-wrap gap-3">
+          {
+            entry.data.tags.map((tag) => (
+              <span class="text-sm text-gray-500">#{tag}</span>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="mx-auto prose prose-lg mt-6 max-w-3xl">
+      <Content />
+    </div>
+    <div class="text-center mt-8">
+      <a
+        href="/blog"
+        class="bg-gray-100 px-5 py-3 rounded-md hover:bg-gray-200 transition"
+        >← Back to Blog</a
+      >
+    </div>
+  </Container>
+</Layout>
+
+```
+
+## File: src/pages/about.astro
+```astro
+---
+import { getCollection } from "astro:content";
+import { Picture } from "astro:assets";
+import Layout from "@/layouts/Layout.astro";
+import Container from "@/components/container.astro";
+import Sectionhead from "@/components/sectionhead.astro";
+
+// Filter team entries with 'draft: false' & date before current date
+const publishedTeamMembers = await getCollection("team", ({ data }) => {
+  return !data.draft && data.publishDate < new Date();
+});
+---
+
+<Layout title="About">
+  <Container>
+    <Sectionhead>
+      <Fragment slot="title">About</Fragment>
+      <Fragment slot="desc">We are a small passionate team.</Fragment>
+    </Sectionhead>
+
+    <div class="flex flex-col gap-3 mx-auto max-w-4xl mt-16">
+      <h2 class="font-bold text-3xl text-gray-800">
+        Empowering the world with Astro.
+      </h2>
+      <p class="text-lg leading-relaxed text-slate-500">
+        We're a multi-cultural team from around the world! We come from diverse
+        backgrounds, bringing different personalities, experiences and skills to
+        the job. This is what makes our team so special.
+      </p>
+    </div>
+    <div class="grid md:grid-cols-3 gap-10 mx-auto max-w-4xl mt-12">
+      {
+        publishedTeamMembers.map((teamMemberEntry) => (
+          <div class="group">
+            <div class="w-full aspect-square">
+              <Picture
+                src={teamMemberEntry.data.avatar.src}
+                alt={teamMemberEntry.data.avatar.alt}
+                sizes="(max-width: 800px) 100vw, 400px"
+                width={400}
+                height={400}
+                class="w-full rounded-sm transition group-hover:-translate-y-1 group-hover:shadow-xl bg-white object-cover object-center aspect-square"
+              />
+            </div>
+
+            <div class="mt-4 text-center">
+              <h2 class="text-lg text-gray-800">{teamMemberEntry.data.name}</h2>
+              <h3 class="text-sm text-slate-500">
+                {teamMemberEntry.data.title}
+              </h3>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </Container>
+</Layout>
+
+```
+
+## File: src/pages/blog.astro
+```astro
+---
+import { getCollection } from "astro:content";
+import { Picture } from "astro:assets";
+import Layout from "@/layouts/Layout.astro";
+import Container from "@/components/container.astro";
+import Sectionhead from "@/components/sectionhead.astro";
+
+// Filter blog entries with 'draft: false' & date before current date
+const publishedBlogEntries = await getCollection("blog", ({ data }) => {
+  return !data.draft && data.publishDate < new Date();
+});
+
+// Sort content entries by publication date
+publishedBlogEntries.sort(function (a, b) {
+  return b.data.publishDate.valueOf() - a.data.publishDate.valueOf();
+});
+---
+
+<Layout title="Blog">
+  <Container>
+    <Sectionhead>
+      <Fragment slot="title">Our Blog</Fragment>
+      <Fragment slot="desc">
+        We write about building startups and thoughts going on our mind.
+      </Fragment>
+    </Sectionhead>
+    <main class="mt-16">
+      <ul class="grid gap-16 max-w-4xl mx-auto">
+        {
+          publishedBlogEntries.map((blogPostEntry, index) => (
+            <li>
+              <a href={`/blog/${blogPostEntry.slug}`}>
+                <div class="grid md:grid-cols-2 gap-5 md:gap-10 items-center">
+                  <Picture
+                    src={blogPostEntry.data.image.src}
+                    alt={blogPostEntry.data.image.alt}
+                    sizes="(max-width: 800px) 100vw, 800px"
+                    width={800}
+                    height={600}
+                    loading={index <= 2 ? "eager" : "lazy"}
+                    decoding={index <= 2 ? "sync" : "async"}
+                    class="w-full rounded-md object-cover object-center bg-white"
+                  />
+                  <div>
+                    <span class="text-blue-400 uppercase tracking-wider text-sm font-medium">
+                      {blogPostEntry.data.category}
+                    </span>
+
+                    <h2 class="text-3xl font-semibold leading-snug tracking-tight mt-1 ">
+                      {blogPostEntry.data.title}
+                    </h2>
+
+                    <div class="flex gap-2 mt-3">
+                      <span class="text-gray-400">
+                        {blogPostEntry.data.author}
+                      </span>
+                      <span class="text-gray-400">• </span>
+                      <time
+                        class="text-gray-400"
+                        datetime={blogPostEntry.data.publishDate.toISOString()}>
+                        {blogPostEntry.data.publishDate.toDateString()}
+                      </time>
+                    </div>
+                  </div>
+                </div>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </main>
+  </Container>
+</Layout>
+
+```
+
+## File: src/pages/contact.astro
+```astro
+---
+import Contactform from "@/components/contactform.astro";
+import Container from "@/components/container.astro";
+import Sectionhead from "@/components/sectionhead.astro";
+import Layout from "@/layouts/Layout.astro";
+import { Icon } from "astro-icon/components";
+---
+
+<Layout title="Contact">
+  <Container>
+    <Sectionhead>
+      <Fragment slot="title">Contact</Fragment>
+      <Fragment slot="desc">We are a here to help.</Fragment>
+    </Sectionhead>
+
+    <div class="grid md:grid-cols-2 gap-10 mx-auto max-w-4xl mt-16">
+      <div>
+        <h2 class="font-medium text-2xl text-gray-800">Contact Astroship</h2>
+        <p class="text-lg leading-relaxed text-slate-500 mt-3">
+          Have something to say? We are here to help. Fill up the form or send
+          email or call phone.
+        </p>
+        <div class="mt-5">
+          <div class="flex items-center mt-2 space-x-2 text-gray-600">
+            <Icon class="text-gray-400 w-4 h-4" name="uil:map-marker" />
+            <span>1734 Sanfransico, CA 93063</span>
+          </div><div class="flex items-center mt-2 space-x-2 text-gray-600">
+            <Icon class="text-gray-400 w-4 h-4" name="uil:envelope" /><a
+              href="mailto:hello@astroshipstarter.com"
+              >hello@astroshipstarter.com</a
+            >
+          </div><div class="flex items-center mt-2 space-x-2 text-gray-600">
+            <Icon class="text-gray-400 w-4 h-4" name="uil:phone" /><a
+              href="tel:+1 (987) 4587 899">+1 (987) 4587 899</a
+            >
+          </div>
+        </div>
+      </div>
+      <div>
+        <Contactform />
+      </div>
+    </div>
+  </Container>
+</Layout>
+
+```
+
+## File: src/pages/index.astro
+```astro
+---
+import Container from "@/components/container.astro";
+import Cta from "@/components/cta.astro";
+import Features from "@/components/features.astro";
+import Hero from "@/components/hero.astro";
+import Logos from "@/components/logos.astro";
+import Layout from "@/layouts/Layout.astro";
+---
+
+<Layout title="">
+  <Container>
+    <Hero />
+    <Features />
+    <Logos />
+    <Cta />
+  </Container>
+</Layout>
+
+```
+
+## File: src/pages/pricing.astro
+```astro
+---
+import Layout from "@/layouts/Layout.astro";
+import Container from "@/components/container.astro";
+import Sectionhead from "@/components/sectionhead.astro";
+import PricingCard from "@/components/pricing.astro";
+
+const pricing = [
+  {
+    name: "Personal",
+    price: "Free",
+    popular: false,
+    features: [
+      "Lifetime free",
+      "Up to 3 users",
+      "Unlimited Pages",
+      "Astro Sub domain",
+      "Basic Integrations",
+      "Community Support",
+    ],
+    button: {
+      text: "Get Started",
+      link: "/",
+    },
+  },
+  {
+    name: "Startup",
+    price: {
+      monthly: "$19",
+      annual: "$16",
+      discount: "10%",
+      original: "$24",
+    },
+    popular: true,
+    features: [
+      "All Free Features",
+      "Up to 20 users",
+      "20 Custom domains",
+      "Unlimited Collaborators",
+      "Advanced Integrations",
+      "Priority Support",
+    ],
+    button: {
+      text: "Get Started",
+      link: "#",
+    },
+  },
+  {
+    name: "Enterprise",
+    price: "Custom",
+    popular: false,
+    features: [
+      "All Pro Features",
+      "Unlimited Custom domains",
+      "99.99% Uptime SLA",
+      "SAML & SSO Integration",
+      "Dedicated Account Manager",
+      "24/7 Phone Support",
+    ],
+    button: {
+      text: "Contact us",
+      link: "/contact",
+    },
+  },
+];
+---
+
+<Layout title="Pricing">
+  <Container>
+    <Sectionhead>
+      <Fragment slot="title">Pricing</Fragment>
+      <Fragment slot="desc">
+        Simple & Predictable pricing. No Surprises.
+      </Fragment>
+    </Sectionhead>
+
+    <div
+      class="grid md:grid-cols-3 gap-10 mx-auto max-w-(--breakpoint-lg) mt-12">
+      {pricing.map((item) => <PricingCard plan={item} />)}
+    </div>
+  </Container>
+</Layout>
+
+```
+
+## File: src/utils/all.js
+```javascript
+/** */
+export const getFormattedDate = (date) =>
+  date
+    ? new Date(date).toLocaleDateString("en-us", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      })
+    : "";
+
+```
+
+## File: astro.config.mjs
+```javascript
+import { defineConfig } from "astro/config";
+import tailwindcss from "@tailwindcss/vite";
+import mdx from "@astrojs/mdx";
+import sitemap from "@astrojs/sitemap";
+import icon from "astro-icon";
+
+// https://astro.build/config
+export default defineConfig({
+  site: "https://astroship.web3templates.com",
+  integrations: [mdx(), sitemap(), icon()],
+  vite: {
+    plugins: [tailwindcss()],
+  },
+});
+
+```
+
