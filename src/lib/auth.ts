@@ -13,15 +13,8 @@ const auth0ClientId = "aum2VaJ1GHfp8CUJhnCMqLvdojKt66CU";
 const getRedirectUri = () => {
   let origin: string;
 
-  if (typeof window !== "undefined" && window.location.origin) {
-    // Im Browser: Origin dynamisch bestimmen
-    origin = window.location.origin;
-  } else {
-    // Fallback für SSR oder lokale Entwicklung
     origin = "http://localhost:4321";
-  }
 
-  // base kommt aus astro:config/client und enthält z.B. '/astroship' auf GitHub Pages
   const cleanBase = base.startsWith("/") ? base.substring(1) : base;
   const formattedBase =
     cleanBase && !cleanBase.endsWith("/") ? `${cleanBase}/` : cleanBase;
