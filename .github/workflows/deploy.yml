@@ -27,10 +27,11 @@ jobs:
           # node-version: 20 # The specific version of Node that should be used to build your site. Defaults to 20. (optional)
           package-manager: bun@latest # The Node package manager that should be used to install dependencies and build your site. Automatically detected based on your lockfile. (optional)
 
-        env: # <-- HIER WERDEN DIE VARIABLEN GESETZT
-          # Verwende vars für nicht-sensible Konfiguration
+        env: 
           PUBLIC_AUTH0_CALLBACK_URL: ${{ vars.AUTH0_CALLBACK_URL }}
           PUBLIC_AUTH0_LOGOUT_URL: ${{ vars.AUTH0_LOGOUT_URL }}
+          PUBLIC_AUTH0_DOMAIN: ${{ vars.AUTH0_DOMAIN }}
+          PUBLIC_AUTH0_CLIENT_ID: ${{ vars.AUTH0_CLIENT_ID }}
 
   deploy:
     needs: build
