@@ -23,8 +23,8 @@ jobs:
       - name: Install, build, and upload your site
         uses: withastro/action@v3
         env:
-          PUBLIC_AUTH0_CALLBACK_URL: ${{ vars.AUTH0_CALLBACK_URL }}
-          PUBLIC_AUTH0_LOGOUT_URL: ${{ vars.AUTH0_LOGOUT_URL }}
+          AUTH0_CALLBACK_URL: ${{ vars.PUBLIC_AUTH0_CALLBACK_URL }}
+          AUTH0_LOGOUT_URL: ${{ vars.PUBLIC_AUTH0_LOGOUT_URL }}
         with:
           # path: . # The root location of your Astro project inside the repository. (optional)
           # node-version: 20 # The specific version of Node that should be used to build your site. Defaults to 20. (optional)
