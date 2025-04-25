@@ -4,7 +4,7 @@ on:
   # Trigger the workflow every time you push to the `main` branch
   # Using a different branch name? Replace `main` with your branch’s name
   push:
-    branches: [ main ]
+    branches: [main]
   # Allows you to run this workflow manually from the Actions tab on GitHub.
   workflow_dispatch:
 
@@ -21,15 +21,16 @@ jobs:
       - name: Checkout your repository using git
         uses: actions/checkout@v4
       - name: Install, build, and upload your site
-        env:
-          PUBLIC_AUTH0_CALLBACK_URL: ${{ vars.AUTH0_CALLBACK_URL }}
-          PUBLIC_AUTH0_LOGOUT_URL: ${{ vars.AUTH0_LOGOUT_URL }}
         uses: withastro/action@v3
-
         with:
           # path: . # The root location of your Astro project inside the repository. (optional)
           # node-version: 20 # The specific version of Node that should be used to build your site. Defaults to 20. (optional)
           package-manager: bun@latest # The Node package manager that should be used to install dependencies and build your site. Automatically detected based on your lockfile. (optional)
+
+        env: # <-- HIER WERDEN DIE VARIABLEN GESETZT
+          # Verwende vars für nicht-sensible Konfiguration
+          PUBLIC_AUTH0_CALLBACK_URL: ${{ vars.AUTH0_CALLBACK_URL }}
+          PUBLIC_AUTH0_LOGOUT_URL: ${{ vars.AUTH0_LOGOUT_URL }}
 
   deploy:
     needs: build
