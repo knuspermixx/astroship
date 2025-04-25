@@ -3,35 +3,23 @@ import {
   type Auth0Client,
   type User,
 } from "@auth0/auth0-spa-js";
-import { base } from "astro:config/client";
+
 
 let auth0Client: Auth0Client | null = null;
 
-const auth0Domain = "https://dev-xt5nci8m2zxscg23.eu.auth0.com";
-const auth0ClientId = "aum2VaJ1GHfp8CUJhnCMqLvdojKt66CU";
+const auth0Domain = import.meta.env.PUBLIC_AUTH0_DOMAIN;
+const auth0ClientId = import.meta.env.PUBLIC_AUTH0_CLIENT_ID;
+const redirectUri = import.meta.env.PUBLIC_AUTH0_CALLBACK_URL;
+const logoutUri = import.meta.env.PUBLIC_AUTH0_LOGOUT_URL;
 
-const getRedirectUri = () => {
-  let origin: string;
-
- // Determine origin based on environment
-  if (import.meta.env.MODE === 'production') {
-    origin = "https://knuspermixx.github.io";
-  } else {
-    origin = "http://localhost:4321";
-  }
-
-  const cleanBase = base.startsWith("/") ? base.substring(1) : base;
-  const formattedBase =
-    cleanBase && !cleanBase.endsWith("/") ? `${cleanBase}/` : cleanBase;
-  return `${origin}/${formattedBase}`;
-};
+ 
 
 async function getClient(): Promise<Auth0Client> {
   if (auth0Client) {
     return auth0Client;
   }
 
-  console.log("Initializing Auth0 client with redirect_uri:", getRedirectUri());
+  console.log("Initializing Auth0 client with redirect_uri:", redirectUri);
 
   try {
     auth0Client = await createAuth0Client({
@@ -39,7 +27,7 @@ async function getClient(): Promise<Auth0Client> {
       clientId: auth0ClientId,
       cacheLocation: "localstorage",
       authorizationParams: {
-        redirect_uri: getRedirectUri(),
+        redirect_uri: redirectUri,
         scope: "repo",
       },
       useRefreshTokens: true,
@@ -55,7 +43,11 @@ async function getClient(): Promise<Auth0Client> {
 export async function login() {
   try {
     const client = await getClient();
-    await client.loginWithRedirect();
+    await client.loginWithRedirect({
+      authorizationParams: {
+        redirect_uri: redirectUri,
+      },
+    });
   } catch (error) {
     console.error("Login failed:", error);
   }
@@ -66,7 +58,7 @@ export async function logout() {
     const client = await getClient();
     await client.logout({
       logoutParams: {
-        returnTo: getRedirectUri(),
+        returnTo: logoutUri,
       },
     });
   } catch (error) {

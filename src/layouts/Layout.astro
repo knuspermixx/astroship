@@ -69,23 +69,32 @@ const makeTitle = title
   </body>
 </html>
 
-<script >
-  import { initAuth } from '../utils/auth'; 
+<script>
+    function afterPageLoad() {
+    console.log("Die gesamte Seite wurde vollständig geladen.");
+  }
+
+  window.addEventListener("load", afterPageLoad);
+
+  import { initAuth } from "/src/astro-cms/scripts/auth"; 
 
   async function handleAuth() {
     try {
       console.log("Layout: Initializing Auth...");
       const { authenticated, user } = await initAuth();
-      console.log("Layout: Auth initialized.", { authenticated, userName: user?.name });
-      // Hier könntest du z.B. ein Custom Event auslösen,
-      // auf das andere Komponenten (wie der Navbar) hören können,
-      // um sich zu aktualisieren, statt initAuth mehrfach aufzurufen.
-      document.dispatchEvent(new CustomEvent('auth-initialized', { detail: { authenticated, user } }));
+      console.log("Layout: Auth initialized.", {
+        authenticated,
+        userName: user?.name,
+      });
+      document.dispatchEvent(
+        new CustomEvent("auth-initialized", { detail: { authenticated, user } })
+      );
     } catch (error) {
       console.error("Layout: Error during auth initialization:", error);
     }
   }
 
-  document.addEventListener('DOMContentLoaded', handleAuth);
+  document.addEventListener("DOMContentLoaded", handleAuth);
+
 
 </script>

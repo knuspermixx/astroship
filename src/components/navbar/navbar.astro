@@ -4,6 +4,7 @@ import Link from "@/components/ui/link.astro";
 import Dropdown from "./dropdown.astro";
 import { Astronav, MenuItems, MenuIcon } from "astro-navbar";
 
+
 const menuitems = [
   {
     title: "Features",
@@ -17,19 +18,19 @@ const menuitems = [
   },
   {
     title: "Pricing",
-    path: "/pricing",
+    path: "/astroship/pricing",
   },
   {
     title: "About",
-    path: "/about",
+    path: "/astroship/about",
   },
   {
     title: "Blog",
-    path: "/blog",
+    path: "/astroship/blog",
   },
   {
     title: "Contact",
-    path: "/contact",
+    path: "/astroship/contact",
   },
   {
     title: "Pro Version",
@@ -43,7 +44,7 @@ const menuitems = [
   <header class="flex flex-col lg:flex-row justify-between items-center my-5">
     <Astronav>
       <div class="flex w-full lg:w-auto items-center justify-between">
-        <a href="/" class="text-lg"
+        <a href="/astroship" class="text-lg"
           ><span class="font-bold text-slate-800">Astro</span><span
             class="text-slate-500">ship</span
           >
@@ -97,26 +98,29 @@ const menuitems = [
   </header>
 </Container>
 
-<script >
-  import { initAuth, login, logout, isAuthenticated } from '../../utils/auth'; 
-
-  const loginBtn = document.getElementById('login-btn');
+<script>
+  import {
+    initAuth,
+    login,
+    logout,
+    isAuthenticated,
+  } from "../../astro-cms/scripts/auth"; // Passe den Pfad ggf. an, wenn du die Struktur änderst (siehe Punkt 2)
+  const loginBtn = document.getElementById("login-btn");
 
   async function updateLoginBtn() {
     if (!loginBtn) {
-      console.error("Login button not found");
       return;
     }
     const authenticated = await isAuthenticated();
     if (authenticated) {
-      loginBtn.textContent = 'Log out';
+      loginBtn.textContent = "Log out";
       loginBtn.onclick = async (e) => {
         e.preventDefault();
         await logout();
         updateLoginBtn();
       };
     } else {
-      loginBtn.textContent = 'Log in';
+      loginBtn.textContent = "Log in";
       loginBtn.onclick = async (e) => {
         e.preventDefault();
         await login();

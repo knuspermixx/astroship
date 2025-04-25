@@ -50,7 +50,7 @@ const posts = await getCollection('blog');
 <div id="cms-collection">
   <ul>
     {posts.map(post => (
-      <li><a href={`/blog/${post.id}`}>{post.data.title}</a></li>
+      <li><a href={`/astroship/blog/${post.id}`}>{post.data.title}</a></li>
     ))}
   </ul>
 </div>
