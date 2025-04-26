@@ -9,8 +9,8 @@ let auth0Client: Auth0Client | null = null;
 
 const auth0Domain = import.meta.env.PUBLIC_AUTH0_DOMAIN;
 const auth0ClientId = import.meta.env.PUBLIC_AUTH0_CLIENT_ID;
-const redirectUri = import.meta.env.PUBLIC_AUTH0_CALLBACK_URL;
-const logoutUri = import.meta.env.PUBLIC_AUTH0_LOGOUT_URL;
+const redirectUri = window.location.origin + import.meta.env.BASE_URL;
+const logoutUri = window.location.origin + import.meta.env.BASE_URL;
  
 
 async function getClient(): Promise<Auth0Client> {
